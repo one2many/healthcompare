@@ -257,7 +257,7 @@ function renderHeader() {
   usTh.innerHTML = `<div class="country-header-cell">
     <div style="font-size:16px;margin-bottom:3px">${COUNTRIES['USA'].flag}</div>
     <span class="country-name-display">${COUNTRIES['USA'].name}</span>
-    <div style="font-size:9px;color:#a8c4e0;margin-top:2px;letter-spacing:.04em">Fixed reference</div>
+    <div style="font-size:9px;color:#a8c4e0;margin-top:2px;letter-spacing:.04em">Most expensive</div>
   </div>`;
   row.appendChild(usTh);
 
