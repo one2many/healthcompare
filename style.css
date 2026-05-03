@@ -231,3 +231,82 @@ tbody tr.data-row td { padding: 7px 12px; border-bottom: 1px solid var(--rule2);
   margin-top: 60px;
   letter-spacing: .02em;
 }
+
+/* ════════════════════════════════════════
+   Shared data-page components
+   (hospitals · insurance · system)
+   ════════════════════════════════════════ */
+
+.page { max-width: 1360px; margin: 0 auto; padding: 28px 20px; }
+
+/* ── Stat row ── */
+.stat-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
+.stat-card { background: var(--paper); border-radius: 4px; padding: 16px 18px; border: 1px solid var(--rule); }
+.stat-label { font-size: 10px; font-weight: 600; color: var(--ink2); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.stat-value { font-size: 24px; font-weight: 700; line-height: 1; color: var(--ink); }
+.stat-sub { font-size: 10px; color: var(--ink3); margin-top: 4px; }
+.stat-delta { font-size: 11px; font-weight: 600; margin-top: 4px; }
+.pos { color: #10b981; }
+.neg { color: #ef4444; }
+
+/* ── Section ── */
+.section { margin-bottom: 32px; }
+.section-title { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 300; letter-spacing: -0.2px; color: var(--ink); margin-bottom: 4px; }
+.section-sub { font-size: 10px; color: var(--ink2); margin-bottom: 16px; letter-spacing: .03em; line-height: 1.6; }
+
+/* ── Grids ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+.grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+
+/* ── Card ── */
+.card { background: var(--paper); border-radius: 4px; border: 1px solid var(--rule); padding: 20px; }
+.card-title { font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 2px; letter-spacing: .02em; }
+.card-sub { font-size: 10px; color: var(--ink3); margin-bottom: 14px; line-height: 1.5; }
+.chart-wrap { position: relative; }
+
+/* ── Data note ── */
+.data-note { font-size: 10px; color: var(--ink2); margin-top: 10px; padding: 8px 12px; background: var(--rule2); border-radius: 2px; border-left: 2px solid var(--rule); line-height: 1.65; }
+
+/* ── Data table ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.data-table th { background: var(--rule2); font-weight: 600; color: var(--ink2); padding: 8px 10px; text-align: right; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; border-bottom: 2px solid var(--rule); }
+.data-table th:first-child { text-align: left; }
+.data-table td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--rule2); color: var(--ink); }
+.data-table td:first-child { text-align: left; font-weight: 500; }
+.data-table tr:hover td { background: #f0ede6; }
+.data-table tr.total-row td { background: var(--rule2); font-weight: 600; border-top: 2px solid var(--rule); }
+
+/* ── Chart type toggle ── */
+.chart-type-toggle { display: flex; gap: 4px; margin-bottom: 8px; }
+.ct-btn { padding: 3px 10px; border-radius: 2px; border: 1px solid var(--rule); background: var(--bg); font-size: 9px; font-weight: 500; cursor: pointer; color: var(--ink2); font-family: 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; transition: all .12s; line-height: 1.4; }
+.ct-btn.active { background: var(--ink); color: #f5f2ec; border-color: var(--ink); }
+.ct-btn:hover:not(.active) { background: var(--rule2); color: var(--ink); }
+
+/* ── Context bar (system overview page) ── */
+.context-bar { background: var(--ink); color: #f5f2ec; border-radius: 4px; padding: 20px 24px; margin-bottom: 28px; }
+.context-bar h2 { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 300; margin-bottom: 12px; color: #f5f2ec; letter-spacing: -0.2px; }
+.bar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.bar-label { font-size: 9px; font-weight: 600; color: var(--ink3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.bar-value { font-size: 20px; font-weight: 700; }
+.bar-sub { font-size: 10px; color: #64748b; margin-top: 3px; }
+
+/* ── Percentage bars ── */
+.pct-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.pct-bar-label { width: 130px; font-size: 11px; font-weight: 500; color: var(--ink2); flex-shrink: 0; }
+.pct-bar-bg { flex: 1; height: 20px; background: var(--rule2); border-radius: 2px; overflow: hidden; }
+.pct-bar-fill { height: 100%; border-radius: 2px; display: flex; align-items: center; padding-left: 8px; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap; transition: width 0.6s ease; }
+.pct-bar-val { width: 60px; text-align: right; font-size: 11px; font-weight: 600; color: var(--ink2); flex-shrink: 0; }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .stat-row { grid-template-columns: repeat(3, 1fr); }
+  .grid-5 { grid-template-columns: repeat(3, 1fr); }
+  .bar-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .grid-5 { grid-template-columns: repeat(2, 1fr); }
+}

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hospitals — US Healthcare System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  /* ── Map layout ── */
+  .map-section { display: grid; grid-template-columns: 280px 1fr; gap: 16px; margin-bottom: 28px; }
+  .system-panel { background: var(--paper); border-radius: 4px; border: 1px solid var(--rule); padding: 16px; overflow-y: auto; max-height: 560px; }
+  .system-panel h3 { font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 4px; letter-spacing: .04em; }
+  .system-panel > p { font-size: 10px; color: var(--ink2); margin-bottom: 14px; }
+  .map-wrap { border-radius: 4px; overflow: hidden; border: 1px solid var(--rule); height: 560px; }
+  #hospital-map { width: 100%; height: 100%; }
+
+  /* ── System list ── */
+  .sys-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 8px; border-radius: 3px; cursor: pointer; transition: background 0.12s; margin-bottom: 2px; user-select: none; }
+  .sys-item:hover { background: var(--rule2); }
+  .sys-item.disabled { opacity: 0.35; }
+  .sys-checkbox { width: 15px; height: 15px; border-radius: 3px; border: 2px solid; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.12s; }
+  .sys-checkbox.checked::after { content: '✓'; font-size: 9px; font-weight: 700; color: #fff; }
+  .sys-info { flex: 1; min-width: 0; }
+  .sys-name { font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .sys-meta { font-size: 10px; color: var(--ink2); }
+  .sys-rev { font-size: 11px; font-weight: 600; margin-top: 2px; }
+
+  /* ── Controls ── */
+  .ctrl-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .ctrl-btn { padding: 3px 10px; border-radius: 2px; border: 1px solid var(--rule); background: var(--bg); font-size: 9px; font-weight: 500; cursor: pointer; color: var(--ink2); font-family: 'DM Mono', monospace; letter-spacing: .06em; text-transform: uppercase; transition: background .12s; }
+  .ctrl-btn:hover { background: var(--rule2); color: var(--ink); }
+
+  /* ── Misc ── */
+  .selected-count { font-size: 10px; color: var(--ink2); margin-bottom: 14px; letter-spacing: .06em; text-transform: uppercase; }
+  .color-badge { display: inline-block; width: 9px; height: 9px; border-radius: 1px; margin-right: 5px; vertical-align: middle; }
+  .profit-chip { display: inline-block; padding: 1px 6px; border-radius: 2px; font-size: 9px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .for-profit { background: var(--accent-light); color: var(--accent); }
+  .nonprofit  { background: var(--gold-light);   color: var(--gold); }
+
+  @media (max-width: 1000px) {
+    .map-section { grid-template-columns: 1fr; }
+    .map-wrap { height: 360px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html">Comparator</a>
+  <a href="hospitals.html" class="active">Hospitals</a>
+  <a href="insurance.html">Insurance</a>
+  <a href="system.html">System</a>
+  <a href="healthcare-as-infrastructure.html">Healthcare as Infrastructure</a>
+</nav>
+
+<div class="header">
+  <h1>Hospital Systems</h1>
+  <span class="subtitle">Top 10 systems by revenue · 2019–2024</span>
+</div>
+
+<div class="page">
+
+  <!-- STAT ROW -->
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-label">2024 Combined Revenue</div>
+      <div class="stat-value" style="color:#10b981">$287B</div>
+      <div class="stat-sub">Top 10 systems</div>
+      <div class="stat-delta pos">+$18B vs 2023</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Hospitals (2024)</div>
+      <div class="stat-value">905</div>
+      <div class="stat-sub">Top 10 systems</div>
+      <div class="stat-delta neg">–100 vs 2019</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">For-Profit vs Nonprofit</div>
+      <div class="stat-value">3 / 7</div>
+      <div class="stat-sub">HCA, Tenet, UHS vs rest</div>
+      <div class="stat-delta" style="color:var(--ink3)">By count</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">2024 Nonprofit Oper. Margin</div>
+      <div class="stat-value" style="color:#ef4444">–0.2%</div>
+      <div class="stat-sub">Average across 7 nonprofits</div>
+      <div class="stat-delta" style="color:var(--ink3)">vs +16.3% for HCA</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">HCA Revenue / Admission</div>
+      <div class="stat-value">$21.1K</div>
+      <div class="stat-sub">Per equivalent admission (2024)</div>
+      <div class="stat-delta pos">+25.6% vs 2019</div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="section">
+    <div class="section-title">Top 10 Hospital Systems — Geographic Map</div>
+    <div class="section-sub">Click a system to toggle it on/off. All charts below update based on selection. Markers show headquarters city; each system operates across multiple states.</div>
+    <div class="map-section">
+      <div class="system-panel">
+        <h3>Hospital Systems</h3>
+        <p>Toggle to include / exclude from analysis</p>
+        <div class="ctrl-row">
+          <button class="ctrl-btn" onclick="selectAll()">Select All</button>
+          <button class="ctrl-btn" onclick="selectNone()">Clear</button>
+          <button class="ctrl-btn" onclick="selectForProfit()">For-Profit Only</button>
+        </div>
+        <div id="sys-list"></div>
+      </div>
+      <div class="map-wrap">
+        <div id="hospital-map"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="selected-count" id="sel-count">10 of 10 systems selected</div>
+
+  <!-- REVENUE & NET INCOME -->
+  <div class="section">
+    <div class="section-title">Revenue &amp; Financial Performance</div>
+    <div class="section-sub">Annual figures for selected systems. Click the legend to show/hide individual lines.</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Annual Revenue ($B)</div>
+        <div class="card-sub">By system, 2019–2024</div>
+        <div class="chart-type-toggle">
+          <button class="ct-btn active" onclick="setChartType('rev','line',this)">Line</button>
+          <button class="ct-btn" onclick="setChartType('rev','bar',this)">Bar</button>
+        </div>
+        <div class="chart-wrap"><canvas id="revChart" height="160"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Net Income ($B)</div>
+        <div class="card-sub">2021 spike = investment gains + COVID relief. 2022 = investment losses.</div>
+        <div class="chart-type-toggle">
+          <button class="ct-btn active" onclick="setChartType('ni','line',this)">Line</button>
+          <button class="ct-btn" onclick="setChartType('ni','bar',this)">Bar</button>
+        </div>
+        <div class="chart-wrap"><canvas id="niChart" height="160"></canvas></div>
+        <p class="data-note">2021 nonprofit net income includes unrealized investment gains and CARES Act funds. 2022 reversal reflects rising interest rates (bond losses) and accelerating labor costs.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCALE & MARGINS -->
+  <div class="section">
+    <div class="section-title">Scale and Operating Metrics</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Number of Hospitals</div>
+        <div class="card-sub">Tenet converting acute care to ambulatory; Advocate doubled via 2022 merger</div>
+        <div class="chart-type-toggle">
+          <button class="ct-btn active" onclick="setChartType('hosp','line',this)">Line</button>
+          <button class="ct-btn" onclick="setChartType('hosp','bar',this)">Bar</button>
+        </div>
+        <div class="chart-wrap"><canvas id="hospChart" height="160"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Operating Margin (%)</div>
+        <div class="card-sub">Operating income as % of revenue. Nonprofits have faced sustained margin pressure since 2021.</div>
+        <div class="chart-type-toggle">
+          <button class="ct-btn active" onclick="setChartType('margin','line',this)">Line</button>
+          <button class="ct-btn" onclick="setChartType('margin','bar',this)">Bar</button>
+        </div>
+        <div class="chart-wrap"><canvas id="marginChart" height="160"></canvas></div>
+        <p class="data-note">Kaiser, Sutter, Providence, CommonSpirit, and Ascension operating margin estimated from available filings. Nonprofit operating margin excludes investment income.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HCA DETAIL -->
+  <div class="section">
+    <div class="section-title">Revenue per Patient — HCA Healthcare</div>
+    <div class="section-sub">HCA is the only system in this group that reports detailed per-admission revenue metrics. Revenue per equivalent admission normalizes for outpatient vs inpatient mix.</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">HCA Revenue per Equivalent Admission ($)</div>
+        <div class="card-sub">Equivalent admissions = weighted inpatient + outpatient volume</div>
+        <div class="chart-wrap"><canvas id="rpaChart" height="160"></canvas></div>
+        <p class="data-note">Revenue per equivalent admission grew 25.6% from 2019 to 2024, outpacing general inflation. Reflects mix shift toward higher-acuity cases and rate increases from payer renegotiations.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">HCA Volume Metrics (thousands)</div>
+        <div class="card-sub">Admissions, Equivalent Admissions, and ER Visits</div>
+        <div class="chart-wrap"><canvas id="volChart" height="160"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVENUE PER HOSPITAL -->
+  <div class="section">
+    <div class="section-title">2024 Revenue per Hospital ($M)</div>
+    <div class="section-sub">Revenue divided by number of hospitals. Sutter's high ratio reflects its premium Northern California market. Tenet's reflects ambulatory surgery concentration.</div>
+    <div class="card">
+      <div class="chart-wrap"><canvas id="rphChart" height="80"></canvas></div>
+      <p class="data-note">Varies significantly by case mix, geography, and payor composition. CHS's low value reflects rural market concentration. Kaiser and Advocate serve large integrated networks with lower average hospital size.</p>
+    </div>
+  </div>
+
+  <!-- DETAIL TABLE -->
+  <div class="section">
+    <div class="section-title">2024 System Detail — Selected Systems</div>
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>System</th>
+            <th>Type</th>
+            <th>2024 Rev ($B)</th>
+            <th>2023 Rev ($B)</th>
+            <th>Growth</th>
+            <th>Oper. Income</th>
+            <th>Net Income</th>
+            <th>Hospitals</th>
+            <th>HQ</th>
+          </tr>
+        </thead>
+        <tbody id="detailBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- .page -->
+
+<script>
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#5a534c';
+
+const years = ['2019','2020','2021','2022','2023','2024'];
+const gridColor = '#ddd8cf';
+
+const systems = {
+  'HCA Healthcare':      { rev:[51.3,51.5,58.8,60.2,65.0,70.6], ni:[3.5,3.8,6.9,5.6,5.2,5.8],  oi:[8.5,8.1,10.2,9.5,10.9,12.3], hosp:[185,186,183,182,182,187], color:'#2563eb', hq:[36.163,-86.782], city:'Nashville, TN',       type:'For-Profit', oiVal:12.3 },
+  'CommonSpirit':        { rev:[29.5,30.5,32.0,33.0,34.2,37.0], ni:[0.8,-0.4,3.0,-3.8,0.5,2.0], oi:[0.5,-0.1,0.2,-1.3,-0.5,1.1], hosp:[142,142,140,140,137,140], color:'#0891b2', hq:[41.878,-87.630], city:'Chicago, IL',           type:'Nonprofit',  oiVal:1.1 },
+  'Ascension':           { rev:[26.2,25.5,27.5,28.3,28.1,28.3], ni:[1.8,-1.8,6.0,-5.5,-2.7,-1.1],oi:[0.3,-0.5,0.5,-2.5,-3.0,-1.8],hosp:[151,150,142,140,140,140], color:'#7c3aed', hq:[38.627,-90.199], city:'St. Louis, MO',         type:'Nonprofit',  oiVal:-1.8 },
+  'Providence':          { rev:[25.0,25.5,27.0,27.0,27.5,28.0], ni:[1.0,-0.5,4.0,-3.5,-0.5,0.5], oi:[0.3,-0.5,0.5,-1.5,-1.2,-0.3],hosp:[51,51,51,51,51,51],       color:'#059669', hq:[47.483,-122.217],city:'Renton, WA',            type:'Nonprofit',  oiVal:-0.3 },
+  'Trinity Health':      { rev:[18.3,18.0,19.5,20.8,21.6,23.9], ni:[1.5,-0.5,4.5,-2.5,0.5,1.5], oi:[0.4,-0.3,0.2,-0.8,-0.05,0.3],hosp:[92,92,88,88,88,88],        color:'#d97706', hq:[42.368,-83.353], city:'Livonia, MI',           type:'Nonprofit',  oiVal:0.3 },
+  'Tenet Healthcare':    { rev:[18.3,17.6,19.7,19.9,20.6,20.7], ni:[-0.4,-0.4,1.1,1.7,2.1,3.2], oi:[1.8,1.7,2.4,3.2,3.5,6.0],   hosp:[65,65,60,57,53,49],        color:'#dc2626', hq:[32.777,-96.797], city:'Dallas, TX',            type:'For-Profit', oiVal:6.0 },
+  'Advocate Health':     { rev:[11.5,11.0,12.5,14.0,30.2,34.0], ni:[0.8,0.2,2.0,-1.5,1.0,2.0],  oi:[0.3,0.0,0.3,-0.2,0.1,0.9],  hosp:[27,27,27,67,67,67],        color:'#0f766e', hq:[35.227,-80.843], city:'Charlotte, NC',         type:'Nonprofit',  oiVal:0.9 },
+  'Universal Health Svcs':{ rev:[11.4,11.6,12.6,13.4,14.3,15.8],ni:[0.8,0.9,1.1,0.8,0.9,1.2],   oi:[1.8,1.8,2.1,2.0,2.2,2.7],   hosp:[null,null,null,null,null,null],color:'#be185d',hq:[40.096,-75.369], city:'King of Prussia, PA', type:'For-Profit', oiVal:2.7 },
+  'Comm. Health Systems': { rev:[12.9,12.4,12.4,12.3,12.5,12.6],ni:[-0.7,-0.4,-0.1,-0.2,-0.3,-0.1],oi:[1.6,1.4,1.6,1.4,1.4,1.5],hosp:[102,90,84,79,73,71],       color:'#9333ea', hq:[35.925,-86.869], city:'Franklin, TN',          type:'For-Profit', oiVal:1.5 },
+  'Sutter Health':       { rev:[13.0,13.0,14.0,14.5,15.4,16.5], ni:[0.8,-0.3,3.0,-2.5,0.5,1.5], oi:[0.2,-0.2,0.3,-0.6,-0.2,0.5],hosp:[24,24,24,24,24,24],         color:'#ea580c', hq:[38.582,-121.494],city:'Sacramento, CA',        type:'Nonprofit',  oiVal:0.5 },
+};
+
+const sysKeys = Object.keys(systems);
+let activeSet = new Set(sysKeys);
+
+// ── Chart type state ──────────────────────────────────────────────────────────
+const chartTypes = { rev: 'line', ni: 'line', hosp: 'line', margin: 'line' };
+
+function setChartType(name, type, btn) {
+  btn.closest('.chart-type-toggle').querySelectorAll('.ct-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  chartTypes[name] = type;
+  ({ rev: makeRevChart, ni: makeNiChart, hosp: makeHospChart, margin: makeMarginChart })[name]?.();
+}
+
+// ── Leaflet map ───────────────────────────────────────────────────────────────
+const map = L.map('hospital-map', { zoomControl: true }).setView([38.5, -97.0], 4);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors', maxZoom: 12
+}).addTo(map);
+
+const markers = {};
+sysKeys.forEach(key => {
+  const s = systems[key];
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="background:${s.color};border:3px solid #faf9f6;border-radius:50%;width:22px;height:22px;box-shadow:0 2px 8px rgba(0,0,0,0.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">${key[0]}</div>`,
+    iconSize: [22, 22], iconAnchor: [11, 11]
+  });
+  const marker = L.marker(s.hq, { icon })
+    .addTo(map)
+    .bindPopup(`<b style="color:${s.color}">${key}</b><br>${s.city}<br>2024 Revenue: $${s.rev[5].toFixed(1)}B<br>${s.hosp[5] ? s.hosp[5] + ' hospitals' : 'Multiple facilities'}`);
+  marker.on('click', () => toggleSystem(key));
+  markers[key] = marker;
+});
+
+// ── System list ───────────────────────────────────────────────────────────────
+sysKeys.forEach(key => {
+  const s = systems[key];
+  const item = document.createElement('div');
+  item.className = 'sys-item';
+  item.id = 'sysitem-' + key.replace(/\s/g, '_');
+  item.innerHTML = `
+    <div class="sys-checkbox checked" id="chk-${key.replace(/[\s.]/g,'_')}" style="border-color:${s.color};background:${s.color}"></div>
+    <div class="sys-info">
+      <div class="sys-name">${key}</div>
+      <div class="sys-meta">${s.city} · <span class="profit-chip ${s.type==='For-Profit'?'for-profit':'nonprofit'}">${s.type}</span></div>
+      <div class="sys-rev" style="color:${s.color}">$${s.rev[5]}B 2024 revenue</div>
+    </div>`;
+  item.addEventListener('click', () => toggleSystem(key));
+  document.getElementById('sys-list').appendChild(item);
+});
+
+function toggleSystem(key) {
+  if (activeSet.has(key)) activeSet.delete(key); else activeSet.add(key);
+  updateAll();
+}
+function selectAll()      { sysKeys.forEach(k => activeSet.add(k)); updateAll(); }
+function selectNone()     { activeSet.clear(); updateAll(); }
+function selectForProfit(){ activeSet.clear(); sysKeys.filter(k => systems[k].type==='For-Profit').forEach(k => activeSet.add(k)); updateAll(); }
+
+function updateAll() {
+  sysKeys.forEach(key => {
+    const s = systems[key];
+    const chk  = document.getElementById('chk-'     + key.replace(/[\s.]/g,'_'));
+    const item = document.getElementById('sysitem-' + key.replace(/\s/g,'_'));
+    if (activeSet.has(key)) {
+      chk.className = 'sys-checkbox checked'; chk.style.background = s.color; chk.style.borderColor = s.color;
+      item?.classList.remove('disabled');
+      markers[key]?.setOpacity(1);
+    } else {
+      chk.className = 'sys-checkbox'; chk.style.background = '#faf9f6'; chk.style.borderColor = '#ddd8cf';
+      item?.classList.add('disabled');
+      markers[key]?.setOpacity(0.18);
+    }
+  });
+  document.getElementById('sel-count').textContent = `${activeSet.size} of ${sysKeys.length} systems selected`;
+  rebuildCharts();
+  rebuildTable();
+}
+
+// ── Charts ────────────────────────────────────────────────────────────────────
+let revChart, niChart, hospChart, marginChart;
+
+function buildDatasets(field) {
+  return sysKeys.filter(k => activeSet.has(k)).map(k => ({
+    label: k, data: systems[k][field],
+    borderColor: systems[k].color, backgroundColor: systems[k].color + '28',
+    borderWidth: 2, pointRadius: 3, tension: 0.3, fill: false, spanGaps: true, borderRadius: 3,
+  }));
+}
+
+function baseOpts(yFmt) {
+  return {
+    responsive: true, maintainAspectRatio: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: {} },
+      y: { grid: { color: gridColor }, ticks: { callback: yFmt || (v => v) } },
+    },
+  };
+}
+
+function makeRevChart() {
+  if (revChart) revChart.destroy();
+  revChart = new Chart(document.getElementById('revChart'), { type: chartTypes.rev, data: { labels: years, datasets: buildDatasets('rev') }, options: baseOpts(v => '$'+v+'B') });
+}
+function makeNiChart() {
+  if (niChart) niChart.destroy();
+  niChart = new Chart(document.getElementById('niChart'), { type: chartTypes.ni, data: { labels: years, datasets: buildDatasets('ni') }, options: baseOpts(v => '$'+v+'B') });
+}
+function makeHospChart() {
+  if (hospChart) hospChart.destroy();
+  const ds = sysKeys.filter(k => activeSet.has(k) && systems[k].hosp[0] !== null).map(k => ({
+    label: k, data: systems[k].hosp,
+    borderColor: systems[k].color, backgroundColor: systems[k].color + '28',
+    borderWidth: 2, pointRadius: 3, tension: 0.3, fill: false, spanGaps: true, borderRadius: 3,
+  }));
+  hospChart = new Chart(document.getElementById('hospChart'), { type: chartTypes.hosp, data: { labels: years, datasets: ds }, options: baseOpts() });
+}
+function makeMarginChart() {
+  if (marginChart) marginChart.destroy();
+  const ds = sysKeys.filter(k => activeSet.has(k)).map(k => {
+    const margins = systems[k].rev.map((r, i) => r ? +((systems[k].oi[i]/r)*100).toFixed(1) : null);
+    return { label: k, data: margins, borderColor: systems[k].color, backgroundColor: systems[k].color+'28', borderWidth: 2, pointRadius: 3, tension: 0.3, fill: false, spanGaps: true, borderRadius: 3 };
+  });
+  marginChart = new Chart(document.getElementById('marginChart'), { type: chartTypes.margin, data: { labels: years, datasets: ds }, options: baseOpts(v => v+'%') });
+}
+
+function rebuildCharts() { makeRevChart(); makeNiChart(); makeHospChart(); makeMarginChart(); }
+
+// ── HCA static charts ─────────────────────────────────────────────────────────
+new Chart(document.getElementById('rpaChart'), {
+  type: 'line',
+  data: { labels: years, datasets: [{ label: 'Revenue per Equivalent Admission ($)', data: [16829,17944,18695,19185,20149,21138], borderColor:'#2563eb', backgroundColor:'#2563eb22', fill:true, borderWidth:2, tension:0.3, pointRadius:4 }] },
+  options: { responsive:true, maintainAspectRatio:true, plugins:{legend:{display:false}}, scales:{ x:{grid:{color:gridColor}}, y:{grid:{color:gridColor},ticks:{callback:v=>'$'+v.toLocaleString()},min:14000} } }
+});
+
+new Chart(document.getElementById('volChart'), {
+  type: 'line',
+  data: { labels: years, datasets: [
+    { label:'Admissions (000s)',        data:[1972,1850,2030,2024,2074,2130], borderColor:'#2563eb', borderWidth:2, tension:0.3, pointRadius:3 },
+    { label:'Equiv. Admissions (000s)', data:[3048,2870,3145,3138,3226,3340], borderColor:'#60a5fa', borderDash:[4,4], borderWidth:2, tension:0.3, pointRadius:3 },
+    { label:'ER Visits (000s)',          data:[9370,8100,9600,9500,9800,10100],borderColor:'#93c5fd', borderWidth:2, tension:0.3, pointRadius:3 },
+  ]},
+  options: { responsive:true, maintainAspectRatio:true, interaction:{mode:'index',intersect:false}, plugins:{legend:{position:'bottom',labels:{boxWidth:10}}}, scales:{ x:{grid:{color:gridColor}}, y:{grid:{color:gridColor}} } }
+});
+
+const rphKeys = sysKeys.filter(k => systems[k].hosp[5]);
+new Chart(document.getElementById('rphChart'), {
+  type: 'bar',
+  data: { labels: rphKeys, datasets: [{ label:'Revenue per Hospital 2024 ($M)', data: rphKeys.map(k => +(systems[k].rev[5]*1000/systems[k].hosp[5]).toFixed(0)), backgroundColor: rphKeys.map(k => systems[k].color), borderRadius:3 }] },
+  options: { indexAxis:'y', responsive:true, maintainAspectRatio:true, plugins:{legend:{display:false}}, scales:{ x:{grid:{color:gridColor},ticks:{callback:v=>'$'+v+'M'}}, y:{grid:{display:false}} } }
+});
+
+// ── Detail table ──────────────────────────────────────────────────────────────
+function rebuildTable() {
+  const tbody = document.getElementById('detailBody');
+  tbody.innerHTML = '';
+  sysKeys.filter(k => activeSet.has(k)).forEach(key => {
+    const s = systems[key];
+    const growth = (((s.rev[5]/s.rev[4])-1)*100).toFixed(1);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="color-badge" style="background:${s.color}"></span>${key}</td>
+      <td style="text-align:left"><span class="profit-chip ${s.type==='For-Profit'?'for-profit':'nonprofit'}">${s.type}</span></td>
+      <td>$${s.rev[5]}B</td>
+      <td>$${s.rev[4]}B</td>
+      <td style="color:${parseFloat(growth)>=0?'#10b981':'#ef4444'};font-weight:600">${growth>0?'+':''}${growth}%</td>
+      <td style="color:${s.oiVal<0?'#ef4444':'#10b981'}">$${s.oiVal}B</td>
+      <td style="color:${s.ni[5]<0?'#ef4444':'#10b981'}">$${s.ni[5]}B</td>
+      <td>${s.hosp[5] ?? '—'}</td>
+      <td style="color:var(--ink2);font-size:10px">${s.city}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+rebuildCharts();
+rebuildTable();
+updateAll();
+</script>
+
+</body>
+</html>

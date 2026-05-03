@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Overview — US Healthcare System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  /* ── Sector cards ── */
+  .sector-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 28px; }
+  .sector-card { border-radius: 4px; padding: 18px; border: 1px solid; }
+  .sc-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+  .sc-rev   { font-size: 24px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .sc-sub   { font-size: 10px; color: var(--ink2); }
+  .sc-gm    { font-size: 12px; font-weight: 600; margin-top: 10px; }
+  .sc-pct   { font-size: 10px; font-weight: 500; margin-top: 4px; color: var(--ink2); }
+
+  /* ── Tag chips ── */
+  .tag { display: inline-block; padding: 1px 7px; border-radius: 2px; font-size: 9px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .tag-h { background: var(--accent-light); color: var(--accent); }
+  .tag-p { background: #ede9fe; color: #5b21b6; }
+  .tag-d { background: var(--gold-light); color: var(--gold); }
+  .tag-i { background: var(--col-us-light); color: var(--col-us); }
+  .tag-s { background: #cffafe; color: #0e7490; }
+
+  @media (max-width: 1100px) { .sector-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 900px)  { .sector-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="index.html">Comparator</a>
+  <a href="hospitals.html">Hospitals</a>
+  <a href="insurance.html">Insurance</a>
+  <a href="system.html" class="active">System</a>
+  <a href="healthcare-as-infrastructure.html">Healthcare as Infrastructure</a>
+</nav>
+
+<div class="header">
+  <h1>US Healthcare System Overview</h1>
+  <span class="subtitle">Hospitals · Pharma · Devices · Supply &amp; Insurance · 2019–2024</span>
+</div>
+
+<div class="page">
+
+  <!-- CONTEXT BAR -->
+  <div class="context-bar">
+    <h2>US National Health Expenditure (NHE) — Estimated</h2>
+    <div class="bar-grid">
+      <div>
+        <div class="bar-label">2024 Total NHE</div>
+        <div class="bar-value" style="color:#a5f3fc">~$4.87T</div>
+        <div class="bar-sub">~$14,600 per capita</div>
+      </div>
+      <div>
+        <div class="bar-label">2019–2024 Growth</div>
+        <div class="bar-value" style="color:#86efac">+28%</div>
+        <div class="bar-sub">From $3.80T to $4.87T</div>
+      </div>
+      <div>
+        <div class="bar-label">% of GDP</div>
+        <div class="bar-value" style="color:#fde68a">~17.6%</div>
+        <div class="bar-sub">Highest among developed nations</div>
+      </div>
+      <div>
+        <div class="bar-label">Medicare Spend (2024)</div>
+        <div class="bar-value" style="color:#c4b5fd">$1.17T</div>
+        <div class="bar-sub">24% of total NHE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAT ROW -->
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-label">Top 10 Hospitals (2024)</div>
+      <div class="stat-value" style="color:#10b981">$287B</div>
+      <div class="stat-sub">Revenue · ~5.9% of NHE</div>
+      <div class="stat-delta pos">+7% vs 2023</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top 10 Pharma (2024)</div>
+      <div class="stat-value" style="color:#8b5cf6">$548B</div>
+      <div class="stat-sub">Revenue · ~11.2% of NHE</div>
+      <div class="stat-delta pos">+9.2% vs 2023</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top 10 Devices (2024)</div>
+      <div class="stat-value" style="color:#f59e0b">$194B</div>
+      <div class="stat-sub">Revenue · ~4.0% of NHE</div>
+      <div class="stat-delta neg">–4.0% vs 2023 (divestitures)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Supply &amp; Service (2024)</div>
+      <div class="stat-value" style="color:#06b6d4">$904B</div>
+      <div class="stat-sub">Revenue · ~18.6% of NHE</div>
+      <div class="stat-delta pos">+11.0% vs 2023</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Health Insurance (2024)</div>
+      <div class="stat-value" style="color:#3b82f6">$1,614B</div>
+      <div class="stat-sub">Revenue · ~33.2% of NHE</div>
+      <div class="stat-delta" style="color:var(--ink3)">Includes PBM pass-through</div>
+    </div>
+  </div>
+
+  <!-- SECTOR SNAPSHOT -->
+  <div class="section">
+    <div class="section-title">2024 Sector Snapshot — Top 10 Companies Each</div>
+    <div class="section-sub">Revenue, gross margin, and net income. Supply &amp; Service revenue is dominated by drug distribution pass-through — gross margins are not comparable to Pharma or Devices.</div>
+    <div class="sector-grid">
+      <div class="sector-card" style="border-color:#10b98140;background:#f0fdf4">
+        <div class="sc-label" style="color:#059669">Hospitals</div>
+        <div class="sc-rev"  style="color:#059669">$287B</div>
+        <div class="sc-sub">2024 revenue, top 10 systems</div>
+        <div class="sc-gm"  style="color:#059669">~6% avg gross margin</div>
+        <div class="sc-pct">Net income: $16.5B (5.7%)</div>
+      </div>
+      <div class="sector-card" style="border-color:#8b5cf640;background:#faf5ff">
+        <div class="sc-label" style="color:#7c3aed">Pharma</div>
+        <div class="sc-rev"  style="color:#7c3aed">$548B</div>
+        <div class="sc-sub">2024 revenue, top 10 companies</div>
+        <div class="sc-gm"  style="color:#7c3aed">~72% avg gross margin</div>
+        <div class="sc-pct">Net income: $93.8B (17.1%)</div>
+      </div>
+      <div class="sector-card" style="border-color:#f59e0b40;background:#fffbeb">
+        <div class="sc-label" style="color:#d97706">Medical Devices</div>
+        <div class="sc-rev"  style="color:#d97706">$194B</div>
+        <div class="sc-sub">2024 revenue, top 10 companies</div>
+        <div class="sc-gm"  style="color:#d97706">~43% avg gross margin</div>
+        <div class="sc-pct">Net income: ~$22.5B (11.6%)</div>
+      </div>
+      <div class="sector-card" style="border-color:#06b6d440;background:#ecfeff">
+        <div class="sc-label" style="color:#0e7490">Supply &amp; Service</div>
+        <div class="sc-rev"  style="color:#0e7490">$904B</div>
+        <div class="sc-sub">2024 revenue, top 10 companies</div>
+        <div class="sc-gm"  style="color:#0e7490">3–62% gross margin range</div>
+        <div class="sc-pct">Big 3 distributors = $830B at 3–4%</div>
+      </div>
+      <div class="sector-card" style="border-color:#3b82f640;background:#eff6ff">
+        <div class="sc-label" style="color:#2563eb">Health Insurance</div>
+        <div class="sc-rev"  style="color:#2563eb">$1,614B</div>
+        <div class="sc-sub">2024 revenue, 9 payers</div>
+        <div class="sc-gm"  style="color:#2563eb">~14% avg gross margin</div>
+        <div class="sc-pct">Includes PBM pass-through revenue</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVENUE TRENDS -->
+  <div class="section">
+    <div class="section-title">Revenue Trends by Sector, 2019–2024 ($B)</div>
+    <div class="section-sub">Aggregate of top 10 companies per sector. Insurance excluded from charts — at $1.6T it would render all other sectors invisible.</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Hospitals, Pharma, Devices &amp; Supply — Revenue ($B)</div>
+        <div class="card-sub">Supply &amp; Service scale reflects distributor pass-through. Pharma 2021 spike = Pfizer COVID products.</div>
+        <div class="chart-type-toggle">
+          <button class="ct-btn active" onclick="setChartType('revTrend','line',this)">Line</button>
+          <button class="ct-btn" onclick="setChartType('revTrend','bar',this)">Bar</button>
+        </div>
+        <div class="chart-wrap"><canvas id="revTrendChart" height="160"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Year-over-Year Revenue Growth (%)</div>
+        <div class="card-sub">Each sector's annual growth rate</div>
+        <div class="chart-type-toggle">
+          <button class="ct-btn" onclick="setChartType('growth','line',this)">Line</button>
+          <button class="ct-btn active" onclick="setChartType('growth','bar',this)">Bar</button>
+        </div>
+        <div class="chart-wrap"><canvas id="growthChart" height="160"></canvas></div>
+        <p class="data-note">Supply &amp; Service growth tracks pharmaceutical price inflation and volume. Pharma 2022–2023 decline reflects post-COVID normalization. Device 2024 decline reflects the Baxter Vantive spinoff and Abbott COVID test falloff.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NET INCOME -->
+  <div class="section">
+    <div class="section-title">Net Income by Sector, 2019–2024 ($B)</div>
+    <div class="section-sub">Supply &amp; Service net income excludes Medline and Vizient (both private). Cardinal Health 2020 includes a large opioid litigation charge.</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Net Income — All Sectors ($B)</div>
+        <div class="card-sub">Top 10 companies per sector aggregated</div>
+        <div class="chart-type-toggle">
+          <button class="ct-btn" onclick="setChartType('niTrend','line',this)">Line</button>
+          <button class="ct-btn active" onclick="setChartType('niTrend','bar',this)">Bar</button>
+        </div>
+        <div class="chart-wrap"><canvas id="niTrendChart" height="160"></canvas></div>
+        <p class="data-note">2021 hospital net income spike and 2022 drop reflect unrealized investment gains/losses in nonprofit endowments. Pharma 2021 peak = Pfizer COVID windfall.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Net Margin by Sector (%)</div>
+        <div class="card-sub">Net income as % of revenue</div>
+        <div class="chart-type-toggle">
+          <button class="ct-btn active" onclick="setChartType('marginTrend','line',this)">Line</button>
+          <button class="ct-btn" onclick="setChartType('marginTrend','bar',this)">Bar</button>
+        </div>
+        <div class="chart-wrap"><canvas id="marginTrendChart" height="160"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- % OF NHE -->
+  <div class="section">
+    <div class="section-title">Sector Revenue as % of National Health Expenditure</div>
+    <div class="section-sub">These are the top 10 companies per sector, not the full sector. Actual sector totals are larger. Supply &amp; Service and Insurance revenue include large pass-through components.</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Top 10 per Sector as % of NHE — 2024</div>
+        <div class="card-sub">Share of estimated $4.87T total US health spend</div>
+        <div style="padding:8px 0" id="pct-bars"></div>
+        <p class="data-note">Insurance ($1.6T) and Supply &amp; Service ($904B) overstate economic value-add — most premium and distribution dollars are collected and passed through to providers and manufacturers.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Sector Revenue as % of NHE Over Time</div>
+        <div class="card-sub">Hospitals, Pharma, Devices, Supply &amp; Service (top 10 each)</div>
+        <div class="chart-type-toggle">
+          <button class="ct-btn active" onclick="setChartType('pctNhe','line',this)">Line</button>
+          <button class="ct-btn" onclick="setChartType('pctNhe','bar',this)">Bar</button>
+        </div>
+        <div class="chart-wrap"><canvas id="pctNheChart" height="200"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROSS MARGIN COMPARISON -->
+  <div class="section">
+    <div class="section-title">Gross Margin Comparison — Selected Companies, 2024</div>
+    <div class="section-sub">The widest spread in the US healthcare system: from Cencora at 3.5% (drug distributor) to AstraZeneca at 82% (branded pharma).</div>
+    <div class="card">
+      <div class="chart-wrap"><canvas id="gmCompChart" height="110"></canvas></div>
+      <p class="data-note">Drug distributors operate on 3–4% gross margins as pass-through logistics businesses. Diagnostics labs (Quest, Labcorp) and GPOs (Premier) run at 31–62% margins on a much smaller revenue base. Eli Lilly's 81% reflects GLP-1 drug pricing power (Mounjaro, Zepbound).</p>
+    </div>
+  </div>
+
+  <!-- SUPPLY & SERVICE SPOTLIGHT -->
+  <div class="section">
+    <div class="section-title">Hospital Supply &amp; Service — Sector Breakdown</div>
+    <div class="section-sub">The sector is structurally two businesses: drug distribution ($830B, 3–4% margins) and everything else ($74B, 21–62% margins). The Big 3 distributors move nearly all branded and generic pharmaceuticals from manufacturers to US hospitals, pharmacies, and clinics.</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">2024 Revenue by Company ($B)</div>
+        <div class="card-sub">McKesson FY ends March — 2024 reflects FY ending March 2024 ($309B).</div>
+        <div class="chart-wrap"><canvas id="suppBreakdownChart" height="160"></canvas></div>
+        <p class="data-note">The Big 3 distributors are logistics intermediaries, not manufacturers. Their revenue reflects the full invoice price of drugs they distribute.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Gross Margin by Company — Supply &amp; Service, 2024</div>
+        <div class="card-sub">Medline and Vizient gross margin not publicly available (both private)</div>
+        <div class="chart-wrap"><canvas id="suppGmChart" height="160"></canvas></div>
+        <p class="data-note">Premier Inc (62%) operates as a group purchasing organization and SaaS analytics platform. Quest Diagnostics (34%) and Labcorp (31%) are clinical lab businesses with strong pricing on proprietary test panels.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPLY TREND -->
+  <div class="section">
+    <div class="section-title">Hospital Supply &amp; Service — Revenue Trend, 2019–2024 ($B)</div>
+    <div class="section-sub">Aggregate of 10 companies. Growth tracks pharmaceutical price inflation and volume growth. McKesson 2020 represents FY ending March 2020.</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Revenue — Major Distributors ($B)</div>
+        <div class="card-sub">McKesson, Cencora, Cardinal Health 2019–2024</div>
+        <div class="chart-wrap"><canvas id="suppDistChart" height="160"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Revenue — Diagnostics, Supply &amp; GPO ($B)</div>
+        <div class="card-sub">Labcorp, Henry Schein, Owens &amp; Minor, Quest, Medline, Premier, Vizient</div>
+        <div class="chart-wrap"><canvas id="suppOtherChart" height="160"></canvas></div>
+        <p class="data-note">Diagnostics revenue (Labcorp, Quest) peaked in 2021 due to COVID PCR test volumes. Both normalized by 2023. Premier's 2022–2023 revenue spike reflects a change in revenue recognition methodology.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL TABLE -->
+  <div class="section">
+    <div class="section-title">Full Revenue and Profit Table — All 40 Companies</div>
+    <div class="section-sub">2023 and 2024 revenue, EBITDA, and net income. Sorted by sector, then 2024 revenue.</div>
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Sector</th>
+            <th>2024 Rev ($B)</th>
+            <th>2023 Rev ($B)</th>
+            <th>Growth</th>
+            <th>2024 EBITDA ($B)</th>
+            <th>2024 Net Income ($B)</th>
+            <th>Gross Margin</th>
+          </tr>
+        </thead>
+        <tbody id="fullTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- .page -->
+
+<script>
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 10;
+Chart.defaults.color = '#5a534c';
+
+const years = ['2019','2020','2021','2022','2023','2024'];
+const gridColor = '#ddd8cf';
+
+const hospRev   = [217.4,216.6,236.0,243.4,269.4,287.4];
+const pharmaRev = [378.0,416.0,498.9,542.3,501.6,547.6];
+const deviceRev = [180.2,171.8,192.7,199.3,202.3,194.1];
+const suppRev   = [605.4,631.5,699.7,761.9,814.5,904.3];
+const hospNI    = [9.9,  0.6, 31.5,-11.4,  7.2, 16.5];
+const pharmaNI  = [76.0,72.6,113.5,108.5, 52.9, 93.8];
+const deviceNI  = [16.2,13.5, 17.7, 17.0, 14.4, 22.5];
+const suppNI    = [5.9,  2.9,  9.2,  7.3, 10.7, 10.9];
+const nhe       = [3795,4123,4256,4481,4672,4867];
+
+const C = { hosp:'#10b981', pharma:'#8b5cf6', device:'#f59e0b', supp:'#06b6d4', ins:'#3b82f6' };
+
+// ── Chart type state ──────────────────────────────────────────────────────────
+const chartTypes = { revTrend:'line', growth:'bar', niTrend:'bar', marginTrend:'line', pctNhe:'line' };
+const chartRefs  = {};
+
+function setChartType(name, type, btn) {
+  btn.closest('.chart-type-toggle').querySelectorAll('.ct-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  chartTypes[name] = type;
+  makers[name]?.();
+}
+
+const makers = {
+  revTrend:    makeRevTrendChart,
+  growth:      makeGrowthChart,
+  niTrend:     makeNiTrendChart,
+  marginTrend: makeMarginTrendChart,
+  pctNhe:      makePctNheChart,
+};
+
+function baseOpts(yFmt) {
+  return {
+    responsive: true, maintainAspectRatio: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, ticks: { callback: yFmt || (v => v) } },
+    },
+  };
+}
+
+function makeRevTrendChart() {
+  if (chartRefs.revTrend) chartRefs.revTrend.destroy();
+  chartRefs.revTrend = new Chart(document.getElementById('revTrendChart'), {
+    type: chartTypes.revTrend,
+    data: { labels: years, datasets: [
+      { label:'Supply & Service', data:suppRev,   borderColor:C.supp,   backgroundColor:C.supp+'18',   fill:true, borderWidth:2.5, tension:0.3, pointRadius:4, borderRadius:3 },
+      { label:'Pharma (top 10)', data:pharmaRev,  borderColor:C.pharma, backgroundColor:C.pharma+'18', fill:true, borderWidth:2.5, tension:0.3, pointRadius:4, borderRadius:3 },
+      { label:'Hospitals (top 10)',data:hospRev,  borderColor:C.hosp,   backgroundColor:C.hosp+'18',   fill:true, borderWidth:2.5, tension:0.3, pointRadius:4, borderRadius:3 },
+      { label:'Devices (top 10)', data:deviceRev, borderColor:C.device, backgroundColor:C.device+'18', fill:true, borderWidth:2.5, tension:0.3, pointRadius:4, borderRadius:3 },
+    ]},
+    options: { ...baseOpts(v => '$'+v+'B'), ...{ plugins: { legend:{ position:'bottom', labels:{boxWidth:12} } }, scales: { x:{grid:{color:gridColor}}, y:{grid:{color:gridColor},ticks:{callback:v=>'$'+v+'B'},title:{display:true,text:'Revenue ($B)'}} } } },
+  });
+}
+
+function pct(arr, i) { return i === 0 ? 0 : +((arr[i]/arr[i-1]-1)*100).toFixed(1); }
+
+function makeGrowthChart() {
+  if (chartRefs.growth) chartRefs.growth.destroy();
+  chartRefs.growth = new Chart(document.getElementById('growthChart'), {
+    type: chartTypes.growth,
+    data: { labels: ['2020','2021','2022','2023','2024'], datasets: [
+      { label:'Hospitals',        data:[1,2,3,4,5].map(i=>pct(hospRev,i)),   backgroundColor:C.hosp,   borderColor:C.hosp,   borderRadius:3, borderWidth:2, pointRadius:3, tension:0.3 },
+      { label:'Pharma',           data:[1,2,3,4,5].map(i=>pct(pharmaRev,i)), backgroundColor:C.pharma, borderColor:C.pharma, borderRadius:3, borderWidth:2, pointRadius:3, tension:0.3 },
+      { label:'Devices',          data:[1,2,3,4,5].map(i=>pct(deviceRev,i)), backgroundColor:C.device, borderColor:C.device, borderRadius:3, borderWidth:2, pointRadius:3, tension:0.3 },
+      { label:'Supply & Service', data:[1,2,3,4,5].map(i=>pct(suppRev,i)),   backgroundColor:C.supp,   borderColor:C.supp,   borderRadius:3, borderWidth:2, pointRadius:3, tension:0.3 },
+    ]},
+    options: { ...baseOpts(v=>v+'%'), ...{ scales:{ x:{grid:{display:false}}, y:{grid:{color:gridColor},ticks:{callback:v=>v+'%'}} } } },
+  });
+}
+
+function makeNiTrendChart() {
+  if (chartRefs.niTrend) chartRefs.niTrend.destroy();
+  chartRefs.niTrend = new Chart(document.getElementById('niTrendChart'), {
+    type: chartTypes.niTrend,
+    data: { labels: years, datasets: [
+      { label:'Hospitals',        data:hospNI,   backgroundColor:C.hosp,   borderColor:C.hosp,   borderRadius:2, borderWidth:2.5, pointRadius:4, tension:0.3 },
+      { label:'Pharma',           data:pharmaNI, backgroundColor:C.pharma, borderColor:C.pharma, borderRadius:2, borderWidth:2.5, pointRadius:4, tension:0.3 },
+      { label:'Devices',          data:deviceNI, backgroundColor:C.device, borderColor:C.device, borderRadius:2, borderWidth:2.5, pointRadius:4, tension:0.3 },
+      { label:'Supply & Service*',data:suppNI,   backgroundColor:C.supp,   borderColor:C.supp,   borderRadius:2, borderWidth:2.5, pointRadius:4, tension:0.3 },
+    ]},
+    options: { ...baseOpts(v=>'$'+v+'B'), ...{ scales:{ x:{grid:{display:false}}, y:{grid:{color:gridColor},ticks:{callback:v=>'$'+v+'B'}} } } },
+  });
+}
+
+function makeMarginTrendChart() {
+  if (chartRefs.marginTrend) chartRefs.marginTrend.destroy();
+  chartRefs.marginTrend = new Chart(document.getElementById('marginTrendChart'), {
+    type: chartTypes.marginTrend,
+    data: { labels: years, datasets: [
+      { label:'Hospitals',        data:hospRev.map((r,i)=>+((hospNI[i]/r)*100).toFixed(1)),     borderColor:C.hosp,   backgroundColor:C.hosp+'18',   borderWidth:2.5, pointRadius:4, tension:0.3, borderRadius:3 },
+      { label:'Pharma',           data:pharmaRev.map((r,i)=>+((pharmaNI[i]/r)*100).toFixed(1)), borderColor:C.pharma, backgroundColor:C.pharma+'18', borderWidth:2.5, pointRadius:4, tension:0.3, borderRadius:3 },
+      { label:'Devices',          data:deviceRev.map((r,i)=>+((deviceNI[i]/r)*100).toFixed(1)), borderColor:C.device, backgroundColor:C.device+'18', borderWidth:2.5, pointRadius:4, tension:0.3, borderRadius:3 },
+      { label:'Supply & Service*',data:suppRev.map((r,i)=>+((suppNI[i]/r)*100).toFixed(2)),     borderColor:C.supp,   backgroundColor:C.supp+'18',   borderWidth:2.5, pointRadius:4, tension:0.3, borderDash:[5,3], borderRadius:3 },
+    ]},
+    options: { ...baseOpts(v=>v+'%'), ...{ scales:{ x:{grid:{color:gridColor}}, y:{grid:{color:gridColor},ticks:{callback:v=>v+'%'},title:{display:true,text:'Net Margin %'}} } } },
+  });
+}
+
+const hospPct   = hospRev.map((r,i)  => +((r/nhe[i])*100).toFixed(1));
+const pharmaPct = pharmaRev.map((r,i) => +((r/nhe[i])*100).toFixed(1));
+const devicePct = deviceRev.map((r,i) => +((r/nhe[i])*100).toFixed(1));
+const suppPct   = suppRev.map((r,i)  => +((r/nhe[i])*100).toFixed(1));
+
+function makePctNheChart() {
+  if (chartRefs.pctNhe) chartRefs.pctNhe.destroy();
+  chartRefs.pctNhe = new Chart(document.getElementById('pctNheChart'), {
+    type: chartTypes.pctNhe,
+    data: { labels: years, datasets: [
+      { label:'Supply & Service', data:suppPct,   borderColor:C.supp,   backgroundColor:C.supp+'18',   borderWidth:2.5, tension:0.3, pointRadius:4, borderRadius:3 },
+      { label:'Pharma (top 10)', data:pharmaPct,  borderColor:C.pharma, backgroundColor:C.pharma+'18', borderWidth:2.5, tension:0.3, pointRadius:4, borderRadius:3 },
+      { label:'Hospitals (top 10)',data:hospPct,  borderColor:C.hosp,   backgroundColor:C.hosp+'18',   borderWidth:2.5, tension:0.3, pointRadius:4, borderRadius:3 },
+      { label:'Devices (top 10)', data:devicePct, borderColor:C.device, backgroundColor:C.device+'18', borderWidth:2.5, tension:0.3, pointRadius:4, borderRadius:3 },
+    ]},
+    options: { ...baseOpts(v=>v+'%'), ...{ scales:{ x:{grid:{color:gridColor}}, y:{grid:{color:gridColor},ticks:{callback:v=>v+'%'},title:{display:true,text:'% of NHE'}} } } },
+  });
+}
+
+// Init switchable charts
+makeRevTrendChart();
+makeGrowthChart();
+makeNiTrendChart();
+makeMarginTrendChart();
+makePctNheChart();
+
+// ── % of NHE bars ─────────────────────────────────────────────────────────────
+const nhe24 = 4867;
+[
+  { label:'Health Insurance',   rev:1614, color:C.ins },
+  { label:'Supply & Service',   rev:904,  color:C.supp },
+  { label:'Pharma (top 10)',    rev:548,  color:C.pharma },
+  { label:'Hospitals (top 10)', rev:287,  color:C.hosp },
+  { label:'Devices (top 10)',   rev:194,  color:C.device },
+].forEach(item => {
+  const p = ((item.rev/nhe24)*100).toFixed(1);
+  const row = document.createElement('div');
+  row.className = 'pct-bar-row';
+  row.innerHTML = `
+    <div class="pct-bar-label">${item.label}</div>
+    <div class="pct-bar-bg">
+      <div class="pct-bar-fill" style="width:${Math.min(parseFloat(p)*3,100)}%;background:${item.color}">${p}%</div>
+    </div>
+    <div class="pct-bar-val" style="color:${item.color}">$${item.rev}B</div>`;
+  document.getElementById('pct-bars').appendChild(row);
+});
+
+// ── Gross margin comparison ───────────────────────────────────────────────────
+const gmData = [
+  {name:'AstraZeneca',gm:82.0,color:C.pharma},{name:'Eli Lilly',gm:81.2,color:C.pharma},
+  {name:'Edwards Lifesciences',gm:78.0,color:C.device},{name:'Merck',gm:76.3,color:C.pharma},
+  {name:'Zimmer Biomet',gm:71.4,color:C.device},{name:'Boston Scientific',gm:70.1,color:C.device},
+  {name:'J&J MedTech',gm:66.1,color:C.device},{name:'Stryker',gm:63.7,color:C.device},
+  {name:'Premier Inc',gm:62.0,color:C.supp},{name:'Abbott',gm:54.8,color:C.device},
+  {name:'GE HealthCare',gm:41.6,color:C.device},{name:'HCA Healthcare',gm:42.9,color:C.hosp},
+  {name:'Quest Diagnostics',gm:34.0,color:C.supp},{name:'UHS',gm:34.8,color:C.hosp},
+  {name:'Labcorp',gm:31.0,color:C.supp},{name:'Henry Schein',gm:31.0,color:C.supp},
+  {name:'Tenet Healthcare',gm:29.0,color:C.hosp},{name:'Owens & Minor',gm:21.7,color:C.supp},
+  {name:'CommonSpirit',gm:5.4,color:C.hosp},{name:'Cardinal Health',gm:4.2,color:C.supp},
+  {name:'McKesson',gm:4.6,color:C.supp},{name:'Cencora',gm:3.5,color:C.supp},
+  {name:'Ascension',gm:-1.8,color:'#ef4444'},
+].sort((a,b) => b.gm - a.gm);
+
+new Chart(document.getElementById('gmCompChart'), {
+  type: 'bar',
+  data: { labels: gmData.map(c=>c.name), datasets:[{ label:'Gross Margin %', data:gmData.map(c=>c.gm), backgroundColor:gmData.map(c=>c.color), borderRadius:3 }] },
+  options: { indexAxis:'y', responsive:true, maintainAspectRatio:true, plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw+'%'}}}, scales:{ x:{grid:{color:gridColor},ticks:{callback:v=>v+'%'},min:-10}, y:{grid:{display:false},ticks:{font:{size:9}}} } },
+});
+
+// ── Supply breakdown ──────────────────────────────────────────────────────────
+const suppCos = [
+  {name:'McKesson',rev:309,sub:'Drug Distribution'},{name:'Cencora',rev:294,sub:'Drug Distribution'},
+  {name:'Cardinal Health',rev:226.8,sub:'Drug Distribution'},{name:'Medline',rev:23,sub:'Medical Supply'},
+  {name:'Labcorp',rev:13,sub:'Diagnostics'},{name:'Henry Schein',rev:12.7,sub:'Dental/Medical Supply'},
+  {name:'Owens & Minor',rev:10.7,sub:'Medical Supply'},{name:'Quest Diagnostics',rev:9.9,sub:'Diagnostics'},
+  {name:'Premier Inc',rev:3.4,sub:'GPO / Analytics'},{name:'Vizient',rev:1.8,sub:'GPO / Analytics'},
+];
+const suppSubColors = { 'Drug Distribution':'#0e7490','Medical Supply':'#06b6d4','Diagnostics':'#67e8f9','Dental/Medical Supply':'#a5f3fc','GPO / Analytics':'#cffafe' };
+
+new Chart(document.getElementById('suppBreakdownChart'), {
+  type: 'bar',
+  data: { labels:suppCos.map(c=>c.name), datasets:[{ label:'2024 Revenue ($B)', data:suppCos.map(c=>c.rev), backgroundColor:suppCos.map(c=>suppSubColors[c.sub]), borderRadius:3 }] },
+  options: { indexAxis:'y', responsive:true, maintainAspectRatio:true, plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'$'+ctx.raw+'B — '+suppCos[ctx.dataIndex].sub}}}, scales:{ x:{grid:{color:gridColor},ticks:{callback:v=>'$'+v+'B'}}, y:{grid:{display:false}} } },
+});
+
+const suppGm = [
+  {name:'Premier Inc',gm:62.0},{name:'Quest Diagnostics',gm:34.0},{name:'Labcorp',gm:31.0},
+  {name:'Henry Schein',gm:31.0},{name:'Owens & Minor',gm:21.7},{name:'McKesson',gm:4.6},
+  {name:'Cardinal Health',gm:4.2},{name:'Cencora',gm:3.5},
+];
+new Chart(document.getElementById('suppGmChart'), {
+  type: 'bar',
+  data: { labels:suppGm.map(c=>c.name), datasets:[{ label:'Gross Margin %', data:suppGm.map(c=>c.gm), backgroundColor:suppGm.map(c=>c.gm>20?'#06b6d4':'#0e7490'), borderRadius:3 }] },
+  options: { indexAxis:'y', responsive:true, maintainAspectRatio:true, plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw+'%'}}}, scales:{ x:{grid:{color:gridColor},ticks:{callback:v=>v+'%'}}, y:{grid:{display:false}} } },
+});
+
+// ── Distributor trends ────────────────────────────────────────────────────────
+new Chart(document.getElementById('suppDistChart'), {
+  type: 'line',
+  data: { labels:years, datasets:[
+    {label:'McKesson',     data:[214.3,214.3,231.1,263.9,276.7,309.0], borderColor:'#0e7490', backgroundColor:'transparent', borderWidth:2.5, tension:0.3, pointRadius:4},
+    {label:'Cencora',      data:[179.6,189.9,213.9,238.6,262.2,294.0], borderColor:'#06b6d4', backgroundColor:'transparent', borderWidth:2.5, tension:0.3, pointRadius:4},
+    {label:'Cardinal Health',data:[152.9,162.5,181.4,186.7,205.0,226.8],borderColor:'#67e8f9', backgroundColor:'transparent', borderWidth:2.5, tension:0.3, pointRadius:4},
+  ]},
+  options: { responsive:true, maintainAspectRatio:true, interaction:{mode:'index',intersect:false}, plugins:{legend:{position:'bottom',labels:{boxWidth:10}}}, scales:{ x:{grid:{color:gridColor}}, y:{grid:{color:gridColor},ticks:{callback:v=>'$'+v+'B'}} } },
+});
+
+new Chart(document.getElementById('suppOtherChart'), {
+  type: 'line',
+  data: { labels:years, datasets:[
+    {label:'Medline',          data:[17.5,20.0,21.0,22.0,21.0,23.0], borderColor:'#0891b2', backgroundColor:'transparent', borderWidth:2, tension:0.3, pointRadius:3},
+    {label:'Labcorp',          data:[11.6,14.0,16.1,14.9,12.2,13.0], borderColor:'#06b6d4', backgroundColor:'transparent', borderWidth:2, tension:0.3, pointRadius:3},
+    {label:'Henry Schein',     data:[10.0,10.1,12.4,12.6,12.4,12.7], borderColor:'#22d3ee', backgroundColor:'transparent', borderWidth:2, tension:0.3, pointRadius:3},
+    {label:'Owens & Minor',    data:[9.2,8.5,9.8,9.9,10.3,10.7],    borderColor:'#67e8f9', backgroundColor:'transparent', borderWidth:2, tension:0.3, pointRadius:3},
+    {label:'Quest Diagnostics',data:[7.7,9.4,10.8,9.9,9.3,9.9],     borderColor:'#a5f3fc', backgroundColor:'transparent', borderWidth:2, tension:0.3, pointRadius:3},
+    {label:'Premier Inc',      data:[1.2,1.3,1.6,1.8,3.7,3.4],      borderColor:'#0e7490', backgroundColor:'transparent', borderWidth:2, tension:0.3, pointRadius:3, borderDash:[4,3]},
+    {label:'Vizient',          data:[1.4,1.5,1.6,1.6,1.7,1.8],      borderColor:'#164e63', backgroundColor:'transparent', borderWidth:2, tension:0.3, pointRadius:3, borderDash:[4,3]},
+  ]},
+  options: { responsive:true, maintainAspectRatio:true, interaction:{mode:'index',intersect:false}, plugins:{legend:{position:'bottom',labels:{boxWidth:10}}}, scales:{ x:{grid:{color:gridColor}}, y:{grid:{color:gridColor},ticks:{callback:v=>'$'+v+'B'}} } },
+});
+
+// ── Full table ────────────────────────────────────────────────────────────────
+const tableRows = [
+  ['HCA Healthcare',       '<span class="tag tag-h">Hospital</span>',   70.6,65.0, '+8.6%',  13.9,  5.8, '42.9%'],
+  ['CommonSpirit Health',  '<span class="tag tag-h">Hospital</span>',   37.0,34.2, '+8.2%',   1.1,  2.0, '5.4%'],
+  ['Advocate Health',      '<span class="tag tag-h">Hospital</span>',   34.0,30.2, '+12.6%',  0.9,  2.0, '4.4%'],
+  ['Ascension',            '<span class="tag tag-h">Hospital</span>',   28.3,28.1, '+0.7%',  -1.8, -1.1, '-1.8%'],
+  ['Providence',           '<span class="tag tag-h">Hospital</span>',   28.0,27.5, '+1.8%',  -0.3,  0.5, '1.8%'],
+  ['Trinity Health',       '<span class="tag tag-h">Hospital</span>',   23.9,21.6, '+10.6%',  0.3,  1.5, '4.6%'],
+  ['Tenet Healthcare',     '<span class="tag tag-h">Hospital</span>',   20.7,20.6, '+0.5%',   6.0,  3.2, '29.0%'],
+  ['Universal Health Svcs','<span class="tag tag-h">Hospital</span>',   15.8,14.3, '+10.5%',  2.4,  1.2, '34.8%'],
+  ['Sutter Health',        '<span class="tag tag-h">Hospital</span>',   16.5,15.4, '+7.1%',   0.5,  1.5, '6.1%'],
+  ['Comm. Health Systems', '<span class="tag tag-h">Hospital</span>',   12.6,12.5, '+0.8%',   1.3, -0.1, '34.1%'],
+  ['Roche',                '<span class="tag tag-p">Pharma</span>',     68.7,66.7, '+3.0%',  22.0, 13.5, '67.0%'],
+  ['Merck',                '<span class="tag tag-p">Pharma</span>',     64.2,60.1, '+6.8%',  27.0, 12.8, '76.3%'],
+  ['Pfizer',               '<span class="tag tag-p">Pharma</span>',     63.6,59.6, '+6.7%',  18.5,  8.0, '65.2%'],
+  ['J&J Innovative Med.',  '<span class="tag tag-p">Pharma</span>',     57.0,54.0, '+5.6%',  21.5, 14.0, '69.5%'],
+  ['AbbVie',               '<span class="tag tag-p">Pharma</span>',     56.3,54.3, '+3.7%',  24.5,  5.0, '70.0%'],
+  ['AstraZeneca',          '<span class="tag tag-p">Pharma</span>',     54.1,45.8, '+18.1%', 17.5,  7.0, '82.0%'],
+  ['Novartis',             '<span class="tag tag-p">Pharma</span>',     50.3,45.4, '+10.8%', 20.5, 11.9, '75.5%'],
+  ['Bristol-Myers Squibb', '<span class="tag tag-p">Pharma</span>',     48.3,45.0, '+7.3%',  18.0,  5.0, '76.6%'],
+  ['Eli Lilly',            '<span class="tag tag-p">Pharma</span>',     45.0,34.1, '+32.0%', 17.5, 10.6, '81.2%'],
+  ['GlaxoSmithKline',      '<span class="tag tag-p">Pharma</span>',     40.1,37.7, '+6.4%',  13.5,  6.0, '66.5%'],
+  ['Medtronic',            '<span class="tag tag-d">Devices</span>',    32.4,31.2, '+3.8%',   9.8,  4.8, '65.1%'],
+  ['J&J MedTech',          '<span class="tag tag-d">Devices</span>',    31.9,30.4, '+4.9%',  10.5,  '—', '66.1%'],
+  ['Abbott Laboratories',  '<span class="tag tag-d">Devices</span>',    28.3,27.0, '+4.8%',   9.5,  7.0, '54.8%'],
+  ['Stryker',              '<span class="tag tag-d">Devices</span>',    22.6,20.5, '+10.2%',  6.5,  3.5, '63.7%'],
+  ['GE HealthCare',        '<span class="tag tag-d">Devices</span>',    19.7,19.6, '+0.5%',   3.8,  2.0, '41.6%'],
+  ['Philips',              '<span class="tag tag-d">Devices</span>',    18.8,18.2, '+3.3%',   2.8,  0.8, '45.7%'],
+  ['Boston Scientific',    '<span class="tag tag-d">Devices</span>',    16.7,14.2, '+17.6%',  5.0,  2.5, '70.1%'],
+  ['Baxter',               '<span class="tag tag-d">Devices</span>',    10.6,14.8, '–28.4%*', 1.8, -0.1, '37.7%'],
+  ['Zimmer Biomet',        '<span class="tag tag-d">Devices</span>',     7.7, 7.4, '+4.1%',   2.5,  0.7, '71.4%'],
+  ['Edwards Lifesciences', '<span class="tag tag-d">Devices</span>',     5.4, 5.9, '–8.5%*',  1.8,  1.3, '77.8%'],
+  ['McKesson',             '<span class="tag tag-s">Supply</span>',    309.0,276.7,'+11.7%',  5.3,  3.4, '4.6%'],
+  ['Cencora',              '<span class="tag tag-s">Supply</span>',    294.0,262.2,'+12.1%',  4.3,  2.2, '3.5%'],
+  ['Cardinal Health',      '<span class="tag tag-s">Supply</span>',    226.8,205.0,'+10.6%',  3.2,  2.3, '4.2%'],
+  ['Medline',              '<span class="tag tag-s">Supply</span>',     23.0, 21.0, '+9.5%',  '—',  '—', '—'],
+  ['Labcorp',              '<span class="tag tag-s">Supply</span>',     13.0, 12.2, '+6.6%',  2.1,  1.1, '31.0%'],
+  ['Henry Schein',         '<span class="tag tag-s">Supply</span>',     12.7, 12.4, '+2.4%',  0.9,  0.6, '31.0%'],
+  ['Owens & Minor',        '<span class="tag tag-s">Supply</span>',     10.7, 10.3, '+3.9%',  0.5, -0.3, '21.7%'],
+  ['Quest Diagnostics',    '<span class="tag tag-s">Supply</span>',      9.9,  9.3, '+6.5%',  1.9,  1.3, '34.0%'],
+  ['Premier Inc',          '<span class="tag tag-s">Supply</span>',      3.4,  3.7, '–8.1%',  0.6,  0.3, '62.0%'],
+  ['Vizient',              '<span class="tag tag-s">Supply</span>',      1.8,  1.7, '+5.9%',  '—',  '—', '—'],
+];
+
+const tbody = document.getElementById('fullTableBody');
+tableRows.forEach(row => {
+  const tr = document.createElement('tr');
+  const isNeg = String(row[4]).startsWith('–') || String(row[4]).startsWith('-');
+  tr.innerHTML = `
+    <td>${row[0]}</td>
+    <td style="text-align:left">${row[1]}</td>
+    <td>$${row[2]}B</td>
+    <td>$${row[3]}B</td>
+    <td style="color:${isNeg?'#ef4444':'#10b981'};font-weight:600">${row[4]}</td>
+    <td>${typeof row[5]==='number'?'$'+row[5]+'B':row[5]}</td>
+    <td style="color:${typeof row[6]==='number'&&row[6]<0?'#ef4444':'inherit'}">${typeof row[6]==='number'?'$'+row[6]+'B':row[6]}</td>
+    <td style="color:${parseFloat(row[7])>50?'#7c3aed':parseFloat(row[7])>20?'#d97706':'var(--ink2)'}">${row[7]}</td>`;
+  tbody.appendChild(tr);
+});
+
+// Sector totals
+const totalsDiv = document.createElement('tr');
+totalsDiv.className = 'total-row';
+totalsDiv.innerHTML = `<td colspan="8" style="font-size:10px;color:var(--ink2);text-align:left;padding:10px">Sector Totals</td>`;
+tbody.appendChild(totalsDiv);
+[
+  ['Hospitals (top 10)',        '<span class="tag tag-h">Hospital</span>', 287.4,269.4,'+6.7%', '~25B', '$16.5B', '~6%'],
+  ['Pharma (top 10)',           '<span class="tag tag-p">Pharma</span>',   547.6,501.6,'+9.2%', '~200B','$93.8B', '~72%'],
+  ['Devices (top 10)',          '<span class="tag tag-d">Devices</span>',  194.1,202.3,'–4.0%', '~54B', '~$22.5B','~43%'],
+  ['Supply & Service (top 10)', '<span class="tag tag-s">Supply</span>',   904.3,814.5,'+11.0%','~19B', '~$10.9B*','~4–62%'],
+].forEach(row => {
+  const tr = document.createElement('tr');
+  tr.className = 'total-row';
+  const isNeg = String(row[4]).startsWith('–') || String(row[4]).startsWith('-');
+  tr.innerHTML = `
+    <td>${row[0]}</td>
+    <td style="text-align:left">${row[1]}</td>
+    <td>$${row[2]}B</td>
+    <td>$${row[3]}B</td>
+    <td style="color:${isNeg?'#ef4444':'#10b981'};font-weight:600">${row[4]}</td>
+    <td>${row[5]}</td>
+    <td>${row[6]}</td>
+    <td>${row[7]}</td>`;
+  tbody.appendChild(tr);
+});
+</script>
+
+</body>
+</html>
